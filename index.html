@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Валентность · Римские цифры</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background: linear-gradient(145deg, #f5f9ff 0%, #e6edf7 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .card {
+            max-width: 920px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.78);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 48px;
+            box-shadow: 0 20px 40px rgba(0, 20, 40, 0.25), 0 8px 16px rgba(0,0,0,0.08);
+            padding: 30px 30px 40px;
+            border: 1px solid rgba(255,255,255,0.5);
+            transition: 0.3s;
+        }
+        h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #0b2b44;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+            letter-spacing: -0.5px;
+            border-bottom: 2px solid rgba(60, 130, 210, 0.2);
+            padding-bottom: 18px;
+        }
+        h1 small {
+            font-size: 0.9rem;
+            font-weight: 400;
+            color: #2c5778;
+            margin-left: auto;
+            background: #d6e5fa;
+            padding: 6px 18px;
+            border-radius: 60px;
+        }
+        .mode-bar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin: 24px 0 20px;
+        }
+        .mode-btn {
+            background: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 1rem;
+            color: #1f4a6e;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.02);
+            border: 1px solid #c7d9ed;
+            cursor: pointer;
+            transition: 0.2s;
+            flex: 1 1 auto;
+            min-width: 140px;
+            letter-spacing: 0.3px;
+            background: #f0f6fe;
+        }
+        .mode-btn.active {
+            background: #1d4f7a;
+            border-color: #1d4f7a;
+            color: white;
+            box-shadow: 0 8px 14px -6px #1d4f7a60;
+            transform: scale(1.02);
+        }
+        .mode-btn:hover:not(.active) {
+            background: #dfebf9;
+            border-color: #8bb3da;
+        }
+        .panel {
+            background: rgba(255,255,255,0.6);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            border-radius: 32px;
+            padding: 28px 24px;
+            box-shadow: inset 0 1px 2px rgba(255,255,255,0.8), 0 8px 18px rgba(0, 20, 30, 0.08);
+            border: 1px solid rgba(255,255,255,0.7);
+            min-height: 280px;
+            display: flex;
+            flex-direction: column;
+        }
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .task-header h2 {
+            font-weight: 500;
+            font-size: 1.3rem;
+            color: #0d3b5a;
+            background: #dce8f8;
+            padding: 4px 18px;
+            border-radius: 40px;
+            letter-spacing: -0.2px;
+        }
+        .task-header .badge {
+            background: #2a5f86;
+            color: white;
+            padding: 6px 18px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        .question {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #00213a;
+            padding: 12px 0 16px;
+            line-height: 1.6;
+            word-break: break-word;
+        }
+        .question .highlight {
+            background: #fbe9d2;
+            padding: 0 10px;
+            border-radius: 20px;
+            color: #a34f0c;
+        }
+        .question sub {
+            font-size: 0.75em;
+            vertical-align: sub;
+        }
+        .input-area {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 16px 20px;
+            margin: 12px 0 10px;
+        }
+        .input-area label {
+            font-weight: 500;
+            color: #1a4463;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .input-area input {
+            background: white;
+            border: 1px solid #b6cee8;
+            border-radius: 60px;
+            padding: 12px 20px;
+            font-size: 1rem;
+            width: 130px;
+            outline: none;
+            transition: 0.2s;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+        .input-area input:focus {
+            border-color: #1f6eb0;
+            box-shadow: 0 0 0 3px #8bb9e6;
+        }
+        .input-area input::placeholder {
+            color: #a0b8cf;
+            font-weight: 400;
+            text-transform: none;
+        }
+        .action-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin: 10px 0 14px;
+        }
+        .btn {
+            background: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            border: 1px solid #b6cee8;
+            color: #1a3d5a;
+            cursor: pointer;
+            transition: 0.15s;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+            background: #ecf3fc;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-primary {
+            background: #1d5a8b;
+            border-color: #1d5a8b;
+            color: white;
+            box-shadow: 0 6px 12px -6px #1d5a8b70;
+        }
+        .btn-primary:hover {
+            background: #154a73;
+            transform: scale(0.98);
+        }
+        .btn-primary:disabled {
+            opacity: 0.6;
+            transform: none;
+            cursor: not-allowed;
+        }
+        .btn-secondary {
+            background: #eaf1fa;
+            border-color: #b8cee6;
+        }
+        .btn-secondary:hover {
+            background: #d7e5f7;
+        }
+        .btn-success {
+            background: #1f8b4c;
+            border-color: #1f8b4c;
+            color: white;
+            box-shadow: 0 6px 12px -6px #1f8b4c70;
+        }
+        .btn-success:hover {
+            background: #16723d;
+        }
+        .feedback {
+            margin: 18px 0 8px;
+            padding: 14px 18px;
+            border-radius: 30px;
+            font-weight: 500;
+            background: #eef4fa;
+            border-left: 5px solid #3679b5;
+            color: #003153;
+            transition: 0.2s;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .feedback .correct {
+            color: #0d6b34;
+            background: #d4edda;
+            padding: 4px 16px;
+            border-radius: 40px;
+            font-weight: 600;
+        }
+        .feedback .wrong {
+            color: #a12737;
+            background: #f8d7da;
+            padding: 4px 16px;
+            border-radius: 40px;
+            font-weight: 600;
+        }
+        .hint {
+            font-size: 0.9rem;
+            color: #3d6180;
+            background: #dfeaf7;
+            padding: 8px 18px;
+            border-radius: 30px;
+            margin: 6px 0;
+        }
+        .footer-actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        .new-task-btn {
+            background: #dce6f2;
+            border: none;
+            padding: 10px 28px;
+            border-radius: 60px;
+            font-weight: 500;
+            color: #1e4463;
+            cursor: pointer;
+            transition: 0.15s;
+            border: 1px solid #b6cde0;
+        }
+        .new-task-btn:hover {
+            background: #c5d7ec;
+        }
+        .progress-block {
+            margin-top: 16px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 20px;
+            background: #dce8f8;
+            padding: 12px 20px;
+            border-radius: 60px;
+            font-weight: 500;
+            color: #0b2b44;
+        }
+        .progress-block span {
+            background: white;
+            padding: 4px 14px;
+            border-radius: 40px;
+        }
+        .progress-btn {
+            background: #2a5f86;
+            border: none;
+            color: white;
+            padding: 6px 18px;
+            border-radius: 60px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+        .progress-btn:hover {
+            background: #1a4463;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+        }
+        .modal.active {
+            display: flex;
+        }
+        .modal-card {
+            background: white;
+            max-width: 500px;
+            width: 90%;
+            border-radius: 40px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        .modal-card h3 {
+            margin-bottom: 16px;
+            color: #0b2b44;
+        }
+        .modal-card input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 60px;
+            border: 1px solid #b6cee8;
+            margin: 8px 0 16px;
+            font-size: 1rem;
+        }
+        .modal-card .btn {
+            width: 100%;
+            justify-content: center;
+        }
+        .close-modal {
+            background: #eaf1fa;
+            border: none;
+            padding: 10px;
+            border-radius: 60px;
+            width: 100%;
+            font-weight: 600;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+        @media (max-width: 600px) {
+            .card { padding: 20px; }
+            .question { font-size: 1.2rem; }
+            .input-area input { width: 110px; }
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h1>⚗️ Валентность <small>римские цифры</small></h1>
+
+    <div class="mode-bar">
+        <button class="mode-btn active" data-mode="constant">Ⅰ Постоянная</button>
+        <button class="mode-btn" data-mode="formula">Ⅱ По формуле</button>
+        <button class="mode-btn" data-mode="index">Ⅲ Индексы</button>
+    </div>
+
+    <div class="panel" id="taskPanel">
+        <div class="task-header">
+            <h2 id="taskTitle">Постоянная валентность</h2>
+            <span class="badge" id="taskCounter">#1</span>
+        </div>
+
+        <div class="question" id="questionText">Валентность элемента <span class="highlight">Na</span> ?</div>
+
+        <div class="input-area" id="inputArea">
+            <label>📝 Ответ:
+                <input type="text" id="answerInput1" placeholder="I, II, III..." value="">
+            </label>
+            <label id="secondLabel" style="display:none;">Ответ 2:
+                <input type="text" id="answerInput2" placeholder="I, II, III..." value="">
+            </label>
+        </div>
+
+        <div class="action-group">
+            <button class="btn btn-primary" id="checkBtn">✅ Проверить</button>
+            <button class="btn btn-success" id="newTaskBtn">🎲 Новая задача</button>
+        </div>
+
+        <div class="feedback" id="feedbackArea"><span>👉 Введите ответ и нажмите «Проверить»</span></div>
+        <div id="hintContainer" class="hint" style="display: none;">Подсказка</div>
+
+        <div class="progress-block">
+            <span>📊 Прогресс</span>
+            <span id="progressText">0 / 0</span>
+            <button class="progress-btn" id="progressDetailsBtn">📋 Детали</button>
+            <button class="progress-btn" id="resetProgressBtn">🔄 Сброс (пароль)</button>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно прогресса -->
+<div class="modal" id="progressModal">
+    <div class="modal-card">
+        <h3>📋 Детали прогресса</h3>
+        <div id="progressDetailsList" style="max-height:200px; overflow-y:auto; margin-bottom:16px; font-size:0.9rem;"></div>
+        <button class="close-modal" id="closeModalBtn">Закрыть</button>
+    </div>
+</div>
+
+<!-- Модальное окно пароля (сброс прогресса) -->
+<div class="modal" id="passwordModal">
+    <div class="modal-card">
+        <h3>🔐 Введите пароль для сброса</h3>
+        <input type="password" id="passwordInput" placeholder="Пароль">
+        <button class="btn btn-primary" id="confirmResetBtn">Сбросить</button>
+        <button class="close-modal" id="closePasswordModalBtn">Отмена</button>
+    </div>
+</div>
+
+<!-- Модальное окно пароля (обновление страницы, F5 / Ctrl+R) -->
+<div class="modal" id="reloadModal">
+    <div class="modal-card">
+        <h3>🔐 Введите пароль для обновления страницы</h3>
+        <input type="password" id="reloadPasswordInput" placeholder="Пароль">
+        <button class="btn btn-primary" id="confirmReloadBtn">Обновить</button>
+        <button class="close-modal" id="closeReloadModalBtn">Отмена</button>
+    </div>
+</div>
+
+<!-- Блокировка после обновления страницы (закрыть нельзя) -->
+<div class="modal" id="lockModal">
+    <div class="modal-card">
+        <h3>🔐 Страница была обновлена. Введите пароль</h3>
+        <input type="password" id="lockPasswordInput" placeholder="Пароль">
+        <button class="btn btn-primary" id="confirmLockBtn">Продолжить</button>
+    </div>
+</div>
+
+<script>
+    (function() {
+        const PASSWORD = 'DEE';
+        const STORAGE_KEY = 'valence_trainer_progress_v1';
+        const RELOAD_FLAG = 'valence_trainer_allow_reload';
+
+        // ----- БАЗЫ ДАННЫХ -----
+
+        // 1. Постоянная валентность (элемент -> арабское число)
+        const CONST_VAL = [
+            { elem: 'H', val: 1 }, { elem: 'Ag', val: 1 }, { elem: 'Na', val: 1 }, { elem: 'K', val: 1 },
+            { elem: 'Li', val: 1 }, { elem: 'Rb', val: 1 }, { elem: 'Cs', val: 1 },
+            { elem: 'O', val: 2 }, { elem: 'Mg', val: 2 }, { elem: 'Ca', val: 2 }, { elem: 'Zn', val: 2 },
+            { elem: 'Ba', val: 2 }, { elem: 'Sr', val: 2 }, { elem: 'Be', val: 2 },
+            { elem: 'Al', val: 3 }, { elem: 'B', val: 3 }
+        ];
+
+        // 2. Формулы (один из элементов всегда с постоянной валентностью)
+        const FORMULA_TASKS = [
+            { formula: 'NaCl', elems: ['Na','Cl'], vals: [1,1] },
+            { formula: 'HCl', elems: ['H','Cl'], vals: [1,1] },
+            { formula: 'H₂O', elems: ['H','O'], vals: [1,2] },
+            { formula: 'AgCl', elems: ['Ag','Cl'], vals: [1,1] },
+            { formula: 'AlCl₃', elems: ['Al','Cl'], vals: [3,1] },
+            { formula: 'ZnCl₂', elems: ['Zn','Cl'], vals: [2,1] },
+            { formula: 'MgO', elems: ['Mg','O'], vals: [2,2] },
+            { formula: 'Na₂O', elems: ['Na','O'], vals: [1,2] },
+            { formula: 'K₂O', elems: ['K','O'], vals: [1,2] },
+            { formula: 'CaO', elems: ['Ca','O'], vals: [2,2] },
+            { formula: 'BaCl₂', elems: ['Ba','Cl'], vals: [2,1] },
+            { formula: 'Al₂O₃', elems: ['Al','O'], vals: [3,2] },
+            { formula: 'FeCl₃', elems: ['Fe','Cl'], vals: [3,1] },
+            { formula: 'FeCl₂', elems: ['Fe','Cl'], vals: [2,1] },
+            { formula: 'CuO', elems: ['Cu','O'], vals: [2,2] },
+            { formula: 'Cu₂O', elems: ['Cu','O'], vals: [1,2] },
+            { formula: 'Ag₂O', elems: ['Ag','O'], vals: [1,2] },
+            { formula: 'ZnO', elems: ['Zn','O'], vals: [2,2] },
+            { formula: 'KCl', elems: ['K','Cl'], vals: [1,1] },
+            { formula: 'CaCl₂', elems: ['Ca','Cl'], vals: [2,1] },
+            { formula: 'MgCl₂', elems: ['Mg','Cl'], vals: [2,1] },
+            { formula: 'AlBr₃', elems: ['Al','Br'], vals: [3,1] },
+            { formula: 'NaBr', elems: ['Na','Br'], vals: [1,1] },
+            { formula: 'KBr', elems: ['K','Br'], vals: [1,1] },
+            { formula: 'Li₂O', elems: ['Li','O'], vals: [1,2] },
+            { formula: 'Rb₂O', elems: ['Rb','O'], vals: [1,2] },
+            { formula: 'Cs₂O', elems: ['Cs','O'], vals: [1,2] },
+            { formula: 'BeO', elems: ['Be','O'], vals: [2,2] },
+            { formula: 'SrO', elems: ['Sr','O'], vals: [2,2] },
+            { formula: 'BaO', elems: ['Ba','O'], vals: [2,2] },
+            { formula: 'AlF₃', elems: ['Al','F'], vals: [3,1] },
+            { formula: 'Na₂S', elems: ['Na','S'], vals: [1,2] },
+            { formula: 'K₂S', elems: ['K','S'], vals: [1,2] },
+            { formula: 'CaS', elems: ['Ca','S'], vals: [2,2] },
+            { formula: 'MgS', elems: ['Mg','S'], vals: [2,2] },
+            { formula: 'ZnS', elems: ['Zn','S'], vals: [2,2] },
+        ];
+
+        // 3. Индексы.
+        //    idx  — правильные индексы [x, y]
+        //    vals — валентности элементов в соединении [для 1-го, для 2-го]
+        //    В условии валентность указывается для ВСЕХ элементов с переменной валентностью.
+        const VARIABLE_ELEMS = ['Cl', 'N', 'P', 'S', 'Fe', 'Cu', 'C', 'Si'];
+
+        function isVariable(elem) {
+            return VARIABLE_ELEMS.includes(elem);
+        }
+
+        const INDEX_TASKS = [
+            // Хлор
+            { elems: ['Cl','O'], idx: [2,7], vals: [7,2], formula: 'Cl₂O₇' },
+            { elems: ['Cl','O'], idx: [2,1], vals: [1,2], formula: 'Cl₂O' },
+            { elems: ['Cl','O'], idx: [1,2], vals: [4,2], formula: 'ClO₂' },
+            { elems: ['Cl','O'], idx: [2,3], vals: [3,2], formula: 'Cl₂O₃' },
+            { elems: ['Cl','O'], idx: [2,5], vals: [5,2], formula: 'Cl₂O₅' },
+            // Азот
+            { elems: ['N','O'], idx: [2,5], vals: [5,2], formula: 'N₂O₅' },
+            { elems: ['N','O'], idx: [1,2], vals: [4,2], formula: 'NO₂' },
+            { elems: ['N','O'], idx: [2,3], vals: [3,2], formula: 'N₂O₃' },
+            { elems: ['N','O'], idx: [1,1], vals: [2,2], formula: 'NO' },
+            { elems: ['N','O'], idx: [2,1], vals: [1,2], formula: 'N₂O' },
+            // Фосфор
+            { elems: ['P','O'], idx: [2,5], vals: [5,2], formula: 'P₂O₅' },
+            { elems: ['P','O'], idx: [2,3], vals: [3,2], formula: 'P₂O₃' },
+            // Сера
+            { elems: ['S','O'], idx: [1,2], vals: [4,2], formula: 'SO₂' },
+            { elems: ['S','O'], idx: [1,3], vals: [6,2], formula: 'SO₃' },
+            { elems: ['S','O'], idx: [1,1], vals: [2,2], formula: 'SO' },
+            // Железо
+            { elems: ['Fe','O'], idx: [2,3], vals: [3,2], formula: 'Fe₂O₃' },
+            { elems: ['Fe','O'], idx: [1,1], vals: [2,2], formula: 'FeO' },
+            // Медь
+            { elems: ['Cu','O'], idx: [1,1], vals: [2,2], formula: 'CuO' },
+            { elems: ['Cu','O'], idx: [2,1], vals: [1,2], formula: 'Cu₂O' },
+            // Углерод
+            { elems: ['C','O'], idx: [1,2], vals: [4,2], formula: 'CO₂' },
+            { elems: ['C','O'], idx: [1,1], vals: [2,2], formula: 'CO' },
+            // Кремний
+            { elems: ['Si','O'], idx: [1,2], vals: [4,2], formula: 'SiO₂' },
+            { elems: ['Si','O'], idx: [1,1], vals: [2,2], formula: 'SiO' },
+            // Постоянные + (при необходимости) переменный второй элемент
+            { elems: ['Al','O'], idx: [2,3], vals: [3,2], formula: 'Al₂O₃' },
+            { elems: ['Al','S'], idx: [2,3], vals: [3,2], formula: 'Al₂S₃' },
+            { elems: ['Na','S'], idx: [2,1], vals: [1,2], formula: 'Na₂S' },
+            { elems: ['Ca','Cl'], idx: [1,2], vals: [2,1], formula: 'CaCl₂' },
+            { elems: ['Al','Cl'], idx: [1,3], vals: [3,1], formula: 'AlCl₃' },
+            { elems: ['Ca','O'], idx: [1,1], vals: [2,2], formula: 'CaO' },
+            { elems: ['Mg','O'], idx: [1,1], vals: [2,2], formula: 'MgO' },
+            { elems: ['Zn','O'], idx: [1,1], vals: [2,2], formula: 'ZnO' },
+            { elems: ['Na','O'], idx: [2,1], vals: [1,2], formula: 'Na₂O' },
+            { elems: ['K','O'], idx: [2,1], vals: [1,2], formula: 'K₂O' },
+            { elems: ['Li','O'], idx: [2,1], vals: [1,2], formula: 'Li₂O' },
+            { elems: ['Ba','O'], idx: [1,1], vals: [2,2], formula: 'BaO' },
+        ];
+
+        // ----- ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ -----
+        function arabicToRoman(num) {
+            const roman = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'];
+            return roman[num] || String(num);
+        }
+
+        function romanToArabic(roman) {
+            const map = { 'I':1, 'II':2, 'III':3, 'IV':4, 'V':5, 'VI':6, 'VII':7, 'VIII':8 };
+            return map[roman.toUpperCase()] || null;
+        }
+
+        // Случайный выбор «без повторов»: задачи перемешиваются и выдаются по одной,
+        // пока не закончится весь набор, затем набор перемешивается заново.
+        const bags = { constant: [], formula: [], index: [] };
+        const lastPicked = { constant: null, formula: null, index: null };
+
+        function shuffle(arr) {
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function getRandom(arr, key) {
+            if (bags[key].length === 0) {
+                bags[key] = shuffle(arr.slice());
+                // чтобы одна и та же задача не выпала дважды подряд на стыке наборов
+                const n = bags[key].length;
+                if (n > 1 && bags[key][n - 1] === lastPicked[key]) {
+                    const j = Math.floor(Math.random() * (n - 1));
+                    [bags[key][n - 1], bags[key][j]] = [bags[key][j], bags[key][n - 1]];
+                }
+            }
+            const item = bags[key].pop();
+            lastPicked[key] = item;
+            return item;
+        }
+
+        function emptyProgress() {
+            return {
+                constant: { total: 0, correct: 0, details: [] },
+                formula: { total: 0, correct: 0, details: [] },
+                index: { total: 0, correct: 0, details: [] }
+            };
+        }
+
+        // ----- СОСТОЯНИЕ -----
+        let mode = 'constant';
+        let currentTask = null;
+        let taskCounter = 0;
+        let isAnswered = false;
+        let progress = emptyProgress();
+
+        // Сохранение / загрузка прогресса (чтобы обновление страницы не обнуляло его)
+        function saveState() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify({ progress: progress, taskCounter: taskCounter, mode: mode }));
+            } catch (e) {}
+        }
+        function loadState() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (!raw) return;
+                const data = JSON.parse(raw);
+                if (data && data.progress && data.progress.constant && data.progress.formula && data.progress.index) {
+                    progress = data.progress;
+                    taskCounter = data.taskCounter || 0;
+                    if (['constant', 'formula', 'index'].includes(data.mode)) mode = data.mode;
+                }
+            } catch (e) {}
+        }
+
+        // DOM
+        const questionEl = document.getElementById('questionText');
+        const answerInput1 = document.getElementById('answerInput1');
+        const answerInput2 = document.getElementById('answerInput2');
+        const secondLabel = document.getElementById('secondLabel');
+        const feedbackEl = document.getElementById('feedbackArea');
+        const taskTitle = document.getElementById('taskTitle');
+        const taskCounterEl = document.getElementById('taskCounter');
+        const progressText = document.getElementById('progressText');
+        const progressDetailsList = document.getElementById('progressDetailsList');
+        const modeBtns = document.querySelectorAll('.mode-btn');
+        const checkBtn = document.getElementById('checkBtn');
+
+        // ---- Генерация задач ----
+        function generateConstantTask() {
+            const item = getRandom(CONST_VAL, 'constant');
+            currentTask = { type: 'constant', elem: item.elem, val: item.val };
+            return `Валентность элемента <span class="highlight">${item.elem}</span> ?`;
+        }
+
+        function generateFormulaTask() {
+            const item = getRandom(FORMULA_TASKS, 'formula');
+            currentTask = { type: 'formula', formula: item.formula, elems: item.elems, vals: item.vals };
+            return `Определите валентность элементов в <b>${item.formula}</b>`;
+        }
+
+        function generateIndexTask() {
+            const item = getRandom(INDEX_TASKS, 'index');
+            const display = `${item.elems[0]}<sub>x</sub>${item.elems[1]}<sub>y</sub>`;
+            currentTask = { type: 'index', display: display, elems: item.elems, expected: item.idx, vals: item.vals, base: item.formula };
+
+            let questionText = `Найдите индексы <b>x</b> и <b>y</b> в соединении <b>${display}</b>`;
+            // Валентность указываем для КАЖДОГО элемента с переменной валентностью
+            const given = [];
+            item.elems.forEach((el, i) => {
+                if (isVariable(el)) {
+                    given.push(`${el} = <b>${arabicToRoman(item.vals[i])}</b>`);
+                }
+            });
+            if (given.length > 0) {
+                questionText += ` (валентность ${given.join(', ')})`;
+            }
+            return questionText;
+        }
+
+        // ---- Обновление интерфейса ----
+        function refreshTask() {
+            let question = '';
+            answerInput1.value = '';
+            answerInput2.value = '';
+            isAnswered = false;
+            checkBtn.disabled = false;
+            feedbackEl.innerHTML = '<span>👉 Введите ответ и нажмите «Проверить»</span>';
+            document.getElementById('hintContainer').style.display = 'none';
+
+            if (mode === 'constant') {
+                question = generateConstantTask();
+                taskTitle.textContent = 'Ⅰ Постоянная валентность';
+                secondLabel.style.display = 'none';
+                answerInput1.placeholder = 'I, II, III...';
+            } else if (mode === 'formula') {
+                question = generateFormulaTask();
+                taskTitle.textContent = 'Ⅱ Валентность по формуле';
+                secondLabel.style.display = 'flex';
+                answerInput1.placeholder = currentTask.elems[0];
+                answerInput2.placeholder = currentTask.elems[1];
+            } else {
+                question = generateIndexTask();
+                taskTitle.textContent = 'Ⅲ Индексы x и y';
+                secondLabel.style.display = 'flex';
+                answerInput1.placeholder = 'x (число)';
+                answerInput2.placeholder = 'y (число)';
+            }
+
+            questionEl.innerHTML = question;
+            taskCounter++;
+            taskCounterEl.textContent = `#${taskCounter}`;
+            updateProgressDisplay();
+            saveState();
+        }
+
+        // ---- Проверка (только 1 раз) ----
+        function checkAnswer() {
+            if (isAnswered) {
+                feedbackEl.innerHTML = '⏳ Ответ уже засчитан. Нажмите «Новая задача».';
+                return;
+            }
+
+            const raw1 = answerInput1.value.trim();
+            const raw2 = answerInput2.value.trim();
+
+            let correct = false;
+            let msg = '';
+
+            if (mode === 'constant') {
+                const arab = romanToArabic(raw1);
+                if (arab === null) { feedbackEl.innerHTML = '⚠️ Введите римскую цифру (I, II, III...)'; return; }
+                correct = (arab === currentTask.val);
+                const correctRoman = arabicToRoman(currentTask.val);
+                msg = correct ? `✅ Верно! Валентность ${currentTask.elem} = ${correctRoman}` : `❌ Неверно. Правильно: ${correctRoman}`;
+                if (correct) progress.constant.correct++;
+                progress.constant.total++;
+                progress.constant.details.push({ task: `${currentTask.elem} → ?`, correct });
+            } 
+            else if (mode === 'formula') {
+                const a1 = romanToArabic(raw1);
+                const a2 = romanToArabic(raw2);
+                if (a1 === null || a2 === null) { feedbackEl.innerHTML = '⚠️ Введите две римские цифры (I, II, III...)'; return; }
+                const [v1, v2] = currentTask.vals;
+                correct = (a1 === v1 && a2 === v2);
+                const r1 = arabicToRoman(v1), r2 = arabicToRoman(v2);
+                msg = correct ? `✅ Верно! ${currentTask.elems[0]}=${r1}, ${currentTask.elems[1]}=${r2}` 
+                              : `❌ Неверно. Правильно: ${currentTask.elems[0]}=${r1}, ${currentTask.elems[1]}=${r2}`;
+                if (correct) progress.formula.correct++;
+                progress.formula.total++;
+                progress.formula.details.push({ task: currentTask.formula, correct });
+            } 
+            else {
+                const x = parseInt(raw1, 10);
+                const y = parseInt(raw2, 10);
+                if (isNaN(x) || isNaN(y)) { feedbackEl.innerHTML = '⚠️ Введите два целых числа (индексы)'; return; }
+                const [e1, e2] = currentTask.expected;
+                correct = (x === e1 && y === e2);
+                msg = correct ? `✅ Верно! x=${e1}, y=${e2} (${currentTask.base})` : `❌ Неверно. Правильно: x=${e1}, y=${e2} (${currentTask.base})`;
+                if (correct) progress.index.correct++;
+                progress.index.total++;
+                progress.index.details.push({ task: currentTask.base, correct });
+            }
+
+            feedbackEl.innerHTML = msg;
+            isAnswered = true;
+            checkBtn.disabled = true;
+            updateProgressDisplay();
+            saveState();
+        }
+
+        // ---- Прогресс ----
+        function updateProgressDisplay() {
+            const total = progress[mode].total;
+            const correct = progress[mode].correct;
+            progressText.textContent = `${correct} / ${total}`;
+        }
+
+        function showProgressDetails() {
+            const modeName = { constant: 'Постоянная', formula: 'Формулы', index: 'Индексы' }[mode];
+            const det = progress[mode].details;
+            let html = `<strong>${modeName}</strong><br>`;
+            if (det.length === 0) html += 'Нет выполненных заданий.';
+            else {
+                det.forEach((d, i) => {
+                    const mark = d.correct ? '✅' : '❌';
+                    html += `${i+1}. ${d.task} ${mark}<br>`;
+                });
+            }
+            progressDetailsList.innerHTML = html;
+            document.getElementById('progressModal').classList.add('active');
+        }
+
+        function resetProgress() {
+            progress = emptyProgress();
+            taskCounter = 0;
+            updateProgressDisplay();
+            feedbackEl.innerHTML = '🔄 Прогресс сброшен.';
+            saveState();
+        }
+
+        // ---- Модалки ----
+        document.getElementById('closeModalBtn').addEventListener('click', function() {
+            document.getElementById('progressModal').classList.remove('active');
+        });
+        document.getElementById('closePasswordModalBtn').addEventListener('click', function() {
+            document.getElementById('passwordModal').classList.remove('active');
+        });
+        document.getElementById('resetProgressBtn').addEventListener('click', function() {
+            document.getElementById('passwordModal').classList.add('active');
+            document.getElementById('passwordInput').value = '';
+            document.getElementById('passwordInput').focus();
+        });
+
+        function confirmReset() {
+            const pwd = document.getElementById('passwordInput').value.trim();
+            if (pwd === PASSWORD) {
+                resetProgress();
+                document.getElementById('passwordModal').classList.remove('active');
+            } else {
+                alert('Неверный пароль!');
+            }
+        }
+        document.getElementById('confirmResetBtn').addEventListener('click', confirmReset);
+        document.getElementById('passwordInput').addEventListener('keypress', e => { if (e.key === 'Enter') confirmReset(); });
+
+        // ---- Обновление страницы под паролем ----
+        let allowUnload = false;
+
+        function openReloadModal() {
+            document.getElementById('reloadModal').classList.add('active');
+            const inp = document.getElementById('reloadPasswordInput');
+            inp.value = '';
+            inp.focus();
+        }
+
+        function confirmReload() {
+            const pwd = document.getElementById('reloadPasswordInput').value.trim();
+            if (pwd === PASSWORD) {
+                try { sessionStorage.setItem(RELOAD_FLAG, '1'); } catch (e) {}
+                allowUnload = true;
+                location.reload();
+            } else {
+                alert('Неверный пароль!');
+            }
+        }
+        document.getElementById('confirmReloadBtn').addEventListener('click', confirmReload);
+        document.getElementById('reloadPasswordInput').addEventListener('keypress', e => { if (e.key === 'Enter') confirmReload(); });
+        document.getElementById('closeReloadModalBtn').addEventListener('click', function() {
+            document.getElementById('reloadModal').classList.remove('active');
+        });
+
+        // Перехват F5 / Ctrl+R / Cmd+R
+        document.addEventListener('keydown', function(e) {
+            const key = (e.key || '').toLowerCase();
+            if (key === 'f5' || ((e.ctrlKey || e.metaKey) && key === 'r')) {
+                e.preventDefault();
+                openReloadModal();
+            }
+        });
+
+        // Кнопка «обновить» в самом браузере перехватить нельзя — показываем предупреждение
+        window.addEventListener('beforeunload', function(e) {
+            if (allowUnload) return;
+            e.preventDefault();
+            e.returnValue = '';
+        });
+
+        // Блокировка страницы, если она была обновлена без пароля
+        function isPageReload() {
+            try {
+                const nav = performance.getEntriesByType('navigation')[0];
+                if (nav) return nav.type === 'reload';
+            } catch (e) {}
+            try { return performance.navigation && performance.navigation.type === 1; } catch (e) {}
+            return false;
+        }
+
+        function confirmLock() {
+            const inp = document.getElementById('lockPasswordInput');
+            if (inp.value.trim() === PASSWORD) {
+                document.getElementById('lockModal').classList.remove('active');
+            } else {
+                alert('Неверный пароль!');
+                inp.value = '';
+                inp.focus();
+            }
+        }
+        document.getElementById('confirmLockBtn').addEventListener('click', confirmLock);
+        document.getElementById('lockPasswordInput').addEventListener('keypress', e => { if (e.key === 'Enter') confirmLock(); });
+
+        // ---- Обработчики ----
+        document.getElementById('checkBtn').addEventListener('click', checkAnswer);
+        document.getElementById('newTaskBtn').addEventListener('click', refreshTask);
+        document.getElementById('progressDetailsBtn').addEventListener('click', showProgressDetails);
+
+        modeBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const m = this.dataset.mode;
+                if (m === mode) return;
+                mode = m;
+                modeBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                if (mode === 'constant') {
+                    secondLabel.style.display = 'none';
+                } else {
+                    secondLabel.style.display = 'flex';
+                }
+                refreshTask();
+            });
+        });
+
+        answerInput1.addEventListener('keypress', e => { if (e.key === 'Enter') checkAnswer(); });
+        answerInput2.addEventListener('keypress', e => { if (e.key === 'Enter') checkAnswer(); });
+
+        // Старт
+        loadState();
+        modeBtns.forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
+        // Не засчитываем показ задачи после загрузки как «лишний» номер
+        if (taskCounter > 0) taskCounter--;
+        refreshTask();
+
+        // Если страница обновлена без пароля — блокируем до ввода пароля
+        let allowedReload = false;
+        try {
+            allowedReload = sessionStorage.getItem(RELOAD_FLAG) === '1';
+            sessionStorage.removeItem(RELOAD_FLAG);
+        } catch (e) {}
+        if (isPageReload() && !allowedReload) {
+            document.getElementById('lockModal').classList.add('active');
+            document.getElementById('lockPasswordInput').focus();
+        }
+    })();
+</script>
+</body>
+</html>
